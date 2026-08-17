@@ -5,19 +5,23 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SAMARQAND: SOYA — Story Mode</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;color:#fff;font-family:Arial,sans-serif}canvas{display:block;width:100%;height:100%}.hud{position:fixed;inset:0;pointer-events:none}.top{display:flex;justify-content:space-between;padding:18px 24px;text-shadow:0 2px 8px #000;font-weight:700}.mission{position:absolute;top:70px;left:24px;background:#071018cc;border:1px solid #ffffff22;border-radius:10px;padding:12px 16px;backdrop-filter:blur(6px)}.help{position:absolute;right:24px;bottom:20px;background:#071018aa;border:1px solid #ffffff18;border-radius:10px;padding:10px 14px;font-size:13px}.intro{position:fixed;inset:0;z-index:5;background:radial-gradient(circle at 50% 35%,#20364d 0,#080b10 55%,#020305 100%);display:flex;align-items:center;justify-content:center;text-align:center}.intro.hide{display:none}.intro h1{font-size:clamp(38px,7vw,90px);letter-spacing:8px;margin:0 0 12px}.intro p{opacity:.8;letter-spacing:2px}.start{margin-top:28px;padding:14px 28px;border:1px solid #ffffff55;background:#ffffff12;color:#fff;border-radius:8px;font-size:16px;cursor:pointer}.start:hover{background:#ffffff22}.cross{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);opacity:.35}.cross:before,.cross:after{content:'';position:absolute;background:#fff}.cross:before{width:18px;height:1px;top:8px}.cross:after{height:18px;width:1px;left:8px}@media(max-width:700px){.help{font-size:11px}.mission{left:12px;top:60px}.top{padding:12px;font-size:13px}}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#030508;color:#fff;font-family:Arial,sans-serif}canvas{display:block;width:100%;height:100%}.hud{position:fixed;inset:0;pointer-events:none}.top{display:flex;justify-content:space-between;padding:18px 24px;text-shadow:0 2px 8px #000;font-weight:700}.mission{position:absolute;top:70px;left:24px;max-width:360px;background:#071018d9;border:1px solid #ffffff22;border-radius:10px;padding:12px 16px;backdrop-filter:blur(8px)}.help{position:absolute;right:24px;bottom:20px;background:#071018bb;border:1px solid #ffffff18;border-radius:10px;padding:10px 14px;font-size:13px}.intro{position:fixed;inset:0;z-index:10;background:radial-gradient(circle at 50% 34%,#20384f 0,#080b10 52%,#020305 100%);display:flex;align-items:center;justify-content:center;text-align:center}.intro.hide{display:none}.intro h1{font-size:clamp(38px,7vw,92px);letter-spacing:8px;margin:0 0 10px;text-shadow:0 8px 35px #000}.intro p{opacity:.78;letter-spacing:3px}.start{margin-top:28px;padding:15px 34px;border:1px solid #ffffff55;background:#ffffff12;color:#fff;border-radius:8px;font-size:16px;cursor:pointer}.start:not(:disabled):hover{background:#ffffff25;transform:translateY(-1px)}.start:disabled{opacity:.45;cursor:wait}.status{margin-top:14px;font-size:13px;opacity:.7;min-height:18px}.cross{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);opacity:.35}.cross:before,.cross:after{content:'';position:absolute;background:#fff}.cross:before{width:18px;height:1px;top:8px}.cross:after{height:18px;width:1px;left:8px}.error{position:fixed;left:50%;top:20px;transform:translateX(-50%);z-index:20;background:#3a1111e8;border:1px solid #ff777766;padding:12px 16px;border-radius:8px;display:none;max-width:min(90vw,700px);text-align:center}@media(max-width:700px){.help{font-size:11px;right:10px;bottom:10px}.mission{left:12px;top:60px}.top{padding:12px;font-size:13px}}
 </style>
 </head>
 <body>
 <canvas id="game"></canvas>
-<div class="intro" id="intro"><div><h1>SAMARQAND: SOYA</h1><p>STORY MODE • PROLOG</p><button class="start" id="start">O‘YINNI BOSHLASH</button></div></div>
-<div class="hud">
-<div class="top"><span>🇺🇿 SAMARQAND: SOYA</span><span id="speed">0 km/soat</span></div>
-<div class="mission" id="mission">Prolog: Shaharga qaytish</div>
-<div class="cross"></div>
-<div class="help">WASD — harakat • SHIFT — tezlik • SPACE — tormoz • Sichqoncha — kamera</div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.min.js"></script>
-<script src="./game.js"></script>
+<div class="intro" id="intro"><div><h1>SAMARQAND: SOYA</h1><p>STORY MODE • PROLOG</p><button class="start" id="start" disabled>YUKLANMOQDA...</button><div class="status" id="status">3D dvigatel yuklanmoqda...</div></div></div>
+<div class="error" id="error"></div>
+<div class="hud"><div class="top"><span>🇺🇿 SAMARQAND: SOYA</span><span id="speed">0 km/soat</span></div><div class="mission" id="mission">Prolog: Shaharga qaytish</div><div class="cross"></div><div class="help">WASD — haydash • SHIFT — tezlanish • SPACE — tormoz • Sichqoncha — kamera • ESC — kursor</div></div>
+<script>
+(function(){
+ const status=document.getElementById('status'),start=document.getElementById('start'),error=document.getElementById('error');
+ const urls=['https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.min.js','https://unpkg.com/three@0.179.1/build/three.min.js'];
+ let i=0;
+ function fail(){error.style.display='block';error.textContent='3D dvigatelni yuklab bo‘lmadi. Internetni tekshiring va sahifani qayta yuklang.';status.textContent='Yuklash amalga oshmadi.';start.disabled=true;}
+ function load(){if(i>=urls.length)return fail();const s=document.createElement('script');s.src=urls[i++];s.onload=()=>{status.textContent='Dunyo tayyorlanmoqda...';const g=document.createElement('script');g.src='./game.js';g.onload=()=>{start.disabled=false;start.textContent='O‘YINNI BOSHLASH';status.textContent='Tayyor.'};g.onerror=fail;document.body.appendChild(g)};s.onerror=load;document.head.appendChild(s)}
+ load();
+})();
+</script>
 </body>
 </html>
