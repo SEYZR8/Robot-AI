@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const root = path.join(__dirname, 'app');
+const root = path.resolve(__dirname, 'app');
 const mime = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -12,41 +12,60 @@ const mime = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
-  '.webp': 'image/webp'
+  '.webp': 'image/webp',
+  '.ico': 'image/x-icon'
 };
 
 function sendFile(res, file) {
-  fs.readFile(file, (err, data) => {
-    if (err) {
-      res.writeHead(err.code === 'ENOENT' ? 404 : 500, { 'Content-Type': 'text/plain; charset=utf-8' });
-      return res.end(err.code === 'ENOENT' ? 'Not found' : 'Server error');
+  fs.stat(file, (statErr, stat) => {
+    if (statErr) return send404(res);
+    if (stat.isDirectory()) {
+      const index = path.join(file, 'index.html');
+      return fs.access(index, fs.constants.R_OK, err => {
+        if (err) return send404(res);
+        sendFile(res, index);
+      });
     }
-    res.writeHead(200, {
-      'Content-Type': mime[path.extname(file)] || 'application/octet-stream',
-      'Cache-Control': 'no-cache'
+
+    fs.readFile(file, (err, data) => {
+      if (err) return send500(res);
+      res.writeHead(200, {
+        'Content-Type': mime[path.extname(file).toLowerCase()] || 'application/octet-stream',
+        'Cache-Control': 'no-store'
+      });
+      res.end(data);
     });
-    res.end(data);
   });
+}
+
+function send404(res) {
+  res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end('Not found');
+}
+
+function send500(res) {
+  res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end('Server error');
 }
 
 const server = http.createServer((req, res) => {
   try {
-    const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    const parsed = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
+    let requestPath = decodeURIComponent(parsed.pathname);
 
-    // The game is the main page.
-    let urlPath = decodeURIComponent(url.pathname);
-    if (urlPath === '/') urlPath = '/game.html';
+    if (requestPath === '/') requestPath = '/index.html';
 
-    const file = path.normalize(path.join(root, urlPath));
-    if (!file.startsWith(root)) {
-      res.writeHead(403);
+    // Prevent path traversal and resolve only inside /app.
+    const relative = requestPath.replace(/^\/+/, '');
+    const file = path.resolve(root, relative);
+    if (file !== root && !file.startsWith(root + path.sep)) {
+      res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
       return res.end('Forbidden');
     }
 
     sendFile(res, file);
-  } catch (e) {
-    res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end('Server error');
+  } catch (err) {
+    send500(res);
   }
 });
 
