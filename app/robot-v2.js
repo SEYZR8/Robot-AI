@@ -1,0 +1,30 @@
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+const stage=document.querySelector('#stage'),state=document.querySelector('#state');
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(30,innerWidth/innerHeight,.05,100);
+camera.position.set(0,1.35,5.2);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;stage.appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=3.1;controls.maxDistance=7;controls.target.set(0,1.15,0);
+scene.add(new THREE.HemisphereLight(0x9dbdff,0x05070b,2.5));
+const key=new THREE.DirectionalLight(0xffffff,4.2);key.position.set(3,5,4);key.castShadow=true;scene.add(key);
+const rim=new THREE.PointLight(0x3c7cff,35,9);rim.position.set(-3,2.8,2);scene.add(rim);
+const fill=new THREE.PointLight(0x9b57ff,16,8);fill.position.set(3,1,-2);scene.add(fill);
+const floor=new THREE.Mesh(new THREE.CylinderGeometry(1.75,1.75,.08,96),new THREE.MeshStandardMaterial({color:0x07101c,metalness:.75,roughness:.2,emissive:0x06152b,emissiveIntensity:1}));floor.position.y=-1.08;floor.receiveShadow=true;scene.add(floor);
+const ringMat=new THREE.MeshBasicMaterial({color:0x6fa2ff,transparent:true,opacity:.55});const ring=new THREE.Mesh(new THREE.TorusGeometry(1.45,.018,12,128),ringMat);ring.rotation.x=Math.PI/2;ring.position.y=-1.02;scene.add(ring);
+const halo=new THREE.Mesh(new THREE.TorusGeometry(1.9,.008,8,128),new THREE.MeshBasicMaterial({color:0x8f62ff,transparent:true,opacity:.28}));halo.rotation.x=Math.PI/2;halo.position.y=-1.0;scene.add(halo);
+let robot=null,mixer=null,clock=new THREE.Clock(),clips=[];
+const loader=new GLTFLoader();
+loader.load('https://threejs.org/examples/models/gltf/RobotExpressive/RobotExpressive.glb',gltf=>{
+ robot=gltf.scene;robot.position.set(0,-1.02,0);robot.scale.setScalar(1.7);robot.rotation.y=Math.PI;robot.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});scene.add(robot);
+ clips=gltf.animations||[];mixer=new THREE.AnimationMixer(robot);
+ const idle=clips.find(a=>/idle/i.test(a.name))||clips[0];if(idle)mixer.clipAction(idle).play();
+ state.textContent='ROBOT MODEL ONLINE';
+ state.classList.add('status');
+},undefined,e=>{console.error(e);state.textContent='MODEL LOAD ERROR'});
+const stars=new THREE.Points(new THREE.BufferGeometry(),new THREE.PointsMaterial({color:0x8eb7ff,size:.018,transparent:true,opacity:.65}));const arr=[];for(let i=0;i<900;i++){const r=2.5+Math.random()*6,a=Math.random()*Math.PI*2;arr.push(Math.cos(a)*r,(Math.random()-.25)*4,Math.sin(a)*r)}stars.geometry.setAttribute('position',new THREE.Float32BufferAttribute(arr,3));scene.add(stars);
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+function animate(){requestAnimationFrame(animate);const dt=clock.getDelta(),t=performance.now();if(mixer)mixer.update(dt);if(robot){robot.rotation.y=Math.PI+Math.sin(t*.00035)*.09;robot.position.y=-1.02+Math.sin(t*.0012)*.025}ring.rotation.z=t*.00035;halo.rotation.z=-t*.00022;stars.rotation.y=t*.000012;controls.update();renderer.render(scene,camera)}animate();
