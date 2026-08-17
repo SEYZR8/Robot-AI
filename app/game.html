@@ -1,2 +1,23 @@
 <!doctype html>
-<html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Samarqand Drive — 3D Test</title><style>html,body{margin:0;height:100%;overflow:hidden;background:#111;font-family:Arial;color:#fff;touch-action:none}#game{display:block;width:100%;height:100%}.hud{position:fixed;inset:0;pointer-events:none}.top{display:flex;justify-content:space-between;padding:14px;font-weight:700;text-shadow:0 2px 5px #000}.mission{position:absolute;top:58px;left:14px;background:#0009;padding:10px 14px;border-radius:10px}.controls{position:absolute;bottom:18px;left:18px;right:18px;display:flex;justify-content:space-between;align-items:end;pointer-events:auto}.pad{display:grid;grid-template-columns:58px 58px 58px;grid-template-rows:58px 58px}.btn{border:1px solid #fff5;background:#111b;color:white;border-radius:14px;font-size:24px;margin:3px}.up{grid-column:2}.down{grid-column:2}.left{grid-column:1;grid-row:2}.right{grid-column:3;grid-row:2}.actions{display:flex;gap:8px;align-items:end}.actions .btn{width:70px;height:70px}.hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:11px;opacity:.7}</style></head><body><canvas id="game"></canvas><div class="hud"><div class="top"><span>🇺🇿 SAMARQAND DRIVE</span><span id="speed">0 km/soat</span></div><div class="mission">Vazifa: Registon tomon haydang</div><div class="controls"><div class="pad"><button class="btn up" data-k="w">▲</button><button class="btn left" data-k="a">◀</button><button class="btn right" data-k="d">▶</button><button class="btn down" data-k="s">▼</button></div><div class="actions"><button class="btn" data-k="shift">🚗</button><button class="btn" data-k="space">⏹</button></div></div><div class="hint">Telefon: tugmalar • Kamera: ekranni suring</div></div><script src="https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.min.js"></script><script src="./game.js"></script></body></html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAMARQAND: SOYA — Story Mode</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070a;color:#fff;font-family:Arial,sans-serif}canvas{display:block;width:100%;height:100%}.hud{position:fixed;inset:0;pointer-events:none}.top{display:flex;justify-content:space-between;padding:18px 24px;text-shadow:0 2px 8px #000;font-weight:700}.mission{position:absolute;top:70px;left:24px;background:#071018cc;border:1px solid #ffffff22;border-radius:10px;padding:12px 16px;backdrop-filter:blur(6px)}.help{position:absolute;right:24px;bottom:20px;background:#071018aa;border:1px solid #ffffff18;border-radius:10px;padding:10px 14px;font-size:13px}.intro{position:fixed;inset:0;z-index:5;background:radial-gradient(circle at 50% 35%,#20364d 0,#080b10 55%,#020305 100%);display:flex;align-items:center;justify-content:center;text-align:center}.intro.hide{display:none}.intro h1{font-size:clamp(38px,7vw,90px);letter-spacing:8px;margin:0 0 12px}.intro p{opacity:.8;letter-spacing:2px}.start{margin-top:28px;padding:14px 28px;border:1px solid #ffffff55;background:#ffffff12;color:#fff;border-radius:8px;font-size:16px;cursor:pointer}.start:hover{background:#ffffff22}.cross{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);opacity:.35}.cross:before,.cross:after{content:'';position:absolute;background:#fff}.cross:before{width:18px;height:1px;top:8px}.cross:after{height:18px;width:1px;left:8px}@media(max-width:700px){.help{font-size:11px}.mission{left:12px;top:60px}.top{padding:12px;font-size:13px}}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div class="intro" id="intro"><div><h1>SAMARQAND: SOYA</h1><p>STORY MODE • PROLOG</p><button class="start" id="start">O‘YINNI BOSHLASH</button></div></div>
+<div class="hud">
+<div class="top"><span>🇺🇿 SAMARQAND: SOYA</span><span id="speed">0 km/soat</span></div>
+<div class="mission" id="mission">Prolog: Shaharga qaytish</div>
+<div class="cross"></div>
+<div class="help">WASD — harakat • SHIFT — tezlik • SPACE — tormoz • Sichqoncha — kamera</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.179.1/build/three.min.js"></script>
+<script src="./game.js"></script>
+</body>
+</html>
