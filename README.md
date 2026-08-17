@@ -1,28 +1,53 @@
-# Robot AI
+# Robot AI — H-01
 
-A premium 3D humanoid AI assistant platform.
+Futuristic 3D humanoid AI assistant for mobile and desktop browsers.
 
-## Vision
+## What is included
 
-Robot AI combines a conversational AI brain with a persistent on-screen humanoid avatar. The architecture is designed for voice conversation, memory, vision, tools, programming assistance, technology knowledge, and realtime avatar interaction.
+- High-performance procedural humanoid 3D avatar with human-like proportions
+- Head, eyes, blink, mouth/lip movement, shoulders, articulated arms, hands, legs and feet
+- Idle, listening, thinking and speaking avatar states
+- Drag-to-rotate and wheel/pinch-friendly camera controls
+- High-FPS renderer with capped device pixel ratio
+- Premium responsive HUD and chat interface
+- Uzbek voice input where supported by the browser
+- Female/male voice profiles using available system speech voices
+- Local conversation memory in browser storage
+- Server-side AI bridge using the OpenAI Responses API
+- Local fallback mode when no API key is configured
+- Health endpoint for deployment checks
+- No API secret is stored in frontend code
+
+## Run locally
+
+Requirements: Node.js 18+.
+
+```bash
+npm start
+```
+
+Open `http://127.0.0.1:3000`.
+
+## Enable the AI brain
+
+Set the API key only in the server environment:
+
+```bash
+export OPENAI_API_KEY="your-key"
+export OPENAI_MODEL="gpt-5.6"
+npm start
+```
+
+Never put the real key into GitHub or browser JavaScript. `.env.example` documents the configuration shape.
 
 ## Architecture
 
-- `frontend/` — browser UI and 3D avatar experience
-- `backend/` — API, orchestration, memory and tool layer
-- `shared/` — shared contracts and types
-- `docs/` — architecture and product documentation
-- `infra/` — deployment and infrastructure configuration
+- `app/index.html` — product shell and controls
+- `app/styles.css` — responsive visual system
+- `app/app.js` — 3D engine, avatar animation, voice, memory and chat client
+- `server.js` — static server, `/api/chat` and `/api/health`
+- `docs/` — architecture and product notes
 
-## Product principles
+## Next production layers
 
-1. Voice-first interaction
-2. Natural humanoid presence
-3. Realtime responses
-4. Safe, tool-based capabilities
-5. Extensible model/provider architecture
-6. Production-ready security and observability
-
-## Status
-
-Foundation phase. The repository is intentionally being built in small, testable layers so the final system remains maintainable rather than becoming a collection of disconnected demos.
+The project is structured so provider adapters, durable memory, authenticated users, vision input, realtime audio, tool execution, observability and a production-grade facial rig can be added without exposing secrets to the browser.
