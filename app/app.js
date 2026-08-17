@@ -1,12 +1,99 @@
-const $=s=>document.querySelector(s);const chat=$('#chat'),input=$('#prompt'),state=$('#voiceState'),fpsEl=$('#fps');let voice='female',listening=false,speaking=false;
+const $=s=>document.querySelector(s);
+const chat=$('#chat'),input=$('#prompt'),state=$('#voiceState'),fpsEl=$('#fps');
+let voice='female',listening=false,speaking=false,robotMode='idle';
 function add(text,who='user'){const el=document.createElement('div');el.className=`msg ${who}`;el.innerHTML=`<div class="avatar">${who==='bot'?'R':'U'}</div><div><small>${who==='bot'?'ROBOT AI':'YOU'}</small><p></p></div>`;el.querySelector('p').textContent=text;chat.appendChild(el);chat.scrollTop=chat.scrollHeight;return el}
-function localReply(q){const x=q.toLowerCase();if(x.includes('imkoniyat'))return 'Men Robot AI — 3D humanoid interfeysli yordamchiman. Keyingi qatlamlarim AI brain, memory, vision, web va IT tools bilan kengaytiriladi.';if(x.includes('javascript'))return 'JavaScript web, server, realtime va AI interfeyslarida ishlatiladi. Men kod yozish, debug, arxitektura va testlashda yordam bera olaman.';if(x.includes('it'))return 'IT bo‘yicha dasturlash, Linux, server, database, cloud, tarmoq va cybersecurity mavzularida yordam bera olaman.';if(x.includes('reja'))return 'Vazifani maqsadga ajratamiz, ustuvorlik beramiz, bajarish va test bosqichlarini nazorat qilamiz.';return 'Savolingizni qabul qildim. Hozir demo brain ishlayapti; production bosqichida model adapteri orqali kuchli AI backend ulanadi.'}
-function speak(text){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='uz-UZ';const vs=speechSynthesis.getVoices();const female=vs.find(v=>/female|zira|samantha|google.*uz|madina/i.test(v.name));const male=vs.find(v=>/male|david|daniel|google.*uz/i.test(v.name));if(voice==='female'&&female)u.voice=female;if(voice==='male'&&male)u.voice=male;u.rate=.9;u.pitch=voice==='female'?1.08:.86;speaking=true;state.textContent='SPEAKING';u.onend=()=>{speaking=false;state.textContent='READY'};speechSynthesis.speak(u)}
+function localReply(q){const x=q.toLowerCase();if(x.includes('imkoniyat'))return 'Men Robot AI — futuristik 3D humanoid interfeysli yordamchiman. AI brain, memory, vision, web va IT tools uchun kengaytiriladigan arxitekturaga egaman.';if(x.includes('javascript'))return 'JavaScript web, server, realtime va AI interfeyslarida ishlatiladi. Men kod yozish, debug, arxitektura va testlashda yordam bera olaman.';if(x.includes('it'))return 'IT bo‘yicha dasturlash, Linux, server, database, cloud, tarmoq va cybersecurity mavzularida yordam bera olaman.';if(x.includes('reja'))return 'Vazifani maqsadga ajratamiz, ustuvorlik beramiz, bajarish va tekshirish bosqichlarini nazorat qilamiz.';return 'Savolingizni qabul qildim. Hozir lokal demo brain ishlayapti; productionda model adapteri orqali kuchli AI backend ulanadi.'}
+function speak(text){if(!('speechSynthesis'in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='uz-UZ';const vs=speechSynthesis.getVoices();const female=vs.find(v=>/female|zira|samantha|google.*uz|madina/i.test(v.name));const male=vs.find(v=>/male|david|daniel|google.*uz/i.test(v.name));if(voice==='female'&&female)u.voice=female;if(voice==='male'&&male)u.voice=male;u.rate=.92;u.pitch=voice==='female'?1.06:.88;speaking=true;state.textContent='SPEAKING';robotMode='speak';u.onend=()=>{speaking=false;state.textContent='READY';robotMode='idle'};speechSynthesis.speak(u)}
 function send(){const q=input.value.trim();if(!q)return;add(q);input.value='';state.textContent='THINKING';robotMode='think';setTimeout(()=>{const r=add(localReply(q),'bot');speak(r.querySelector('p').textContent)},350)}
 $('#send').onclick=send;input.onkeydown=e=>{if(e.key==='Enter')send()};document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{input.value=b.dataset.q;send()});document.querySelectorAll('.voice').forEach(b=>b.onclick=()=>{voice=b.dataset.voice;document.querySelectorAll('.voice').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('#voiceLabel').textContent=voice==='female'?'Qiz ovozi':'Erkak ovozi'});$('#mic').onclick=()=>{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){add('Brauzer ovozli tanishni qo‘llamaydi. Chrome orqali sinab ko‘ring.','bot');return}if(listening)return;const r=new SR();r.lang='uz-UZ';r.interimResults=false;listening=true;state.textContent='LISTENING';robotMode='listen';r.onresult=e=>{input.value=e.results[0][0].transcript;send()};r.onerror=()=>{state.textContent='READY';robotMode='idle'};r.onend=()=>{listening=false;if(!speaking&&state.textContent==='LISTENING')state.textContent='READY';robotMode='idle'};r.start()};
-const canvas=$('#scene'),stage=$('#stage');const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0,0);const scene=new THREE.Scene();const camera=new THREE.PerspectiveCamera(32,1,.1,100);camera.position.set(0,1.15,5.8);scene.add(new THREE.HemisphereLight(0xa9c2ff,0x050b16,2.2));const key=new THREE.DirectionalLight(0xe7efff,4.2);key.position.set(3,5,4);scene.add(key);const rim=new THREE.PointLight(0x4c8dff,28,10);rim.position.set(-3,2,2);scene.add(rim);const warm=new THREE.PointLight(0x7d4cff,10,7);warm.position.set(3,-1,-1);scene.add(warm);
-const group=new THREE.Group();group.position.y=-1.55;scene.add(group);const metal=new THREE.MeshStandardMaterial({color:0x8796a8,metalness:.88,roughness:.2}),dark=new THREE.MeshStandardMaterial({color:0x070d1a,metalness:.62,roughness:.25}),glow=new THREE.MeshStandardMaterial({color:0x8db5ff,emissive:0x3976ff,emissiveIntensity:4,metalness:.3,roughness:.16});function mesh(g,m,p,s){const o=new THREE.Mesh(g,m);o.position.set(...p);o.scale.set(...s);group.add(o);return o}function capsule(r,l){return new THREE.CapsuleGeometry(r,l,10,20)}
-const leftLeg=mesh(capsule(.18,.72),metal,[-.29,-.67,0],[1,1,1]),rightLeg=mesh(capsule(.18,.72),metal,[.29,-.67,0],[1,1,1]);const torso=mesh(new THREE.BoxGeometry(1.08,1.25,.6),metal,[0,.25,0],[1,1,1]);mesh(new THREE.CylinderGeometry(.34,.42,.18,32),dark,[0,.92,0],[1,1,1]);const head=mesh(new THREE.SphereGeometry(.5,40,30),metal,[0,1.45,0],[1,.98,.83]);mesh(new THREE.SphereGeometry(.38,32,20),dark,[0,1.48,.38],[1,.78,.31]);const eyeL=mesh(new THREE.SphereGeometry(.073,18,14),glow,[-.16,1.56,.63],[1,.62,.4]),eyeR=mesh(new THREE.SphereGeometry(.073,18,14),glow,[.16,1.56,.63],[1,.62,.4]);const mouth=mesh(new THREE.TorusGeometry(.12,.018,10,32),glow,[0,1.36,.66],[1,.55,1]);const core=mesh(new THREE.SphereGeometry(.17,24,18),glow,[0,.28,.34],[1,1,.4]);const shoulderL=mesh(new THREE.SphereGeometry(.28,24,18),metal,[-.74,.62,0],[1,.95,1]),shoulderR=mesh(new THREE.SphereGeometry(.28,24,18),metal,[.74,.62,0],[1,.95,1]);const armL=mesh(capsule(.13,.72),metal,[-.9,.03,0],[1,1,1]),armR=mesh(capsule(.13,.72),metal,[.9,.03,0],[1,1,1]);const foreL=mesh(capsule(.12,.55),metal,[-.9,-.62,0],[1,1,1]),foreR=mesh(capsule(.12,.55),metal,[.9,-.62,0],[1,1,1]);
-const ring=new THREE.Mesh(new THREE.TorusGeometry(1.18,.012,8,96),glow);ring.rotation.x=Math.PI/2;ring.position.y=-1.55;scene.add(ring);const ring2=new THREE.Mesh(new THREE.TorusGeometry(1.48,.006,8,96),new THREE.MeshBasicMaterial({color:0x6d96ff,transparent:true,opacity:.35}));ring2.rotation.x=Math.PI/2;ring2.position.y=-1.55;scene.add(ring2);const floor=new THREE.Mesh(new THREE.CircleGeometry(2.2,64),new THREE.MeshBasicMaterial({color:0x0b1630,transparent:true,opacity:.34}));floor.rotation.x=-Math.PI/2;floor.position.y=-1.55;scene.add(floor);
-const particles=new THREE.Points(new THREE.BufferGeometry(),new THREE.PointsMaterial({color:0x7fa8ff,size:.018,transparent:true,opacity:.7}));const pv=[];for(let i=0;i<420;i++){const a=Math.random()*Math.PI*2,r=.7+Math.random()*2.1,y=-1.5+Math.random()*3.7;pv.push(Math.cos(a)*r,y,Math.sin(a)*r)}particles.geometry.setAttribute('position',new THREE.Float32BufferAttribute(pv,3));scene.add(particles);
-let robotMode='idle',last=performance.now(),frames=0;function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();function animate(t){requestAnimationFrame(animate);const dt=(t-last)/1000;last=t;frames++;if(frames%20===0)fpsEl.textContent=Math.round(1/Math.max(dt,.001));const idle=Math.sin(t*.00135),slow=Math.sin(t*.00072),talk=speaking?Math.abs(Math.sin(t*.022)):0;group.position.y=-1.55+idle*.035;group.rotation.y=Math.sin(t*.00033)*.12;head.rotation.y=Math.sin(t*.0008)*.06;head.rotation.z=Math.sin(t*.00063)*.018;torso.rotation.z=Math.sin(t*.00055)*.012;shoulderL.rotation.z=.04+Math.sin(t*.0011)*.035;shoulderR.rotation.z=-.04-Math.sin(t*.0011)*.035;armL.rotation.z=.08+Math.sin(t*.0011)*.05;armR.rotation.z=-.08-Math.sin(t*.0011)*.05;foreL.rotation.z=Math.sin(t*.0013)*.04;foreR.rotation.z=-Math.sin(t*.0013)*.04;core.material.emissiveIntensity=4+Math.sin(t*.004)*1.6+(robotMode==='think'?3:0);const blink=(Math.sin(t*.00037)>0.997)?0.12:1;eyeL.scale.y=.62*blink;eyeR.scale.y=.62*blink;eyeL.material.emissiveIntensity=4+Math.sin(t*.005)*1.2;eyeR.material.emissiveIntensity=eyeL.material.emissiveIntensity;mouth.scale.y=.55+.32*talk;mouth.rotation.z=talk*.35;ring.rotation.z=t*.00042;ring2.rotation.z=-t*.00026;particles.rotation.y=t*.000035;particles.position.y=Math.sin(t*.0007)*.035;renderer.render(scene,camera)}animate(performance.now());speechSynthesis?.addEventListener('voiceschanged',()=>speechSynthesis.getVoices());
+
+const canvas=$('#scene'),stage=$('#stage');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:innerWidth>700,alpha:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor(0,0);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(28,1,.1,100);camera.position.set(0,.25,5.7);
+scene.add(new THREE.HemisphereLight(0xb9d2ff,0x040711,2.4));
+const key=new THREE.DirectionalLight(0xf3f7ff,3.4);key.position.set(3,5,4);scene.add(key);
+const rim=new THREE.PointLight(0x4288ff,24,9);rim.position.set(-3,2.2,2);scene.add(rim);
+const violet=new THREE.PointLight(0x9a55ff,10,7);violet.position.set(3,.5,-2);scene.add(violet);
+
+const robot=new THREE.Group();robot.position.y=-1.72;scene.add(robot);
+const metal=new THREE.MeshStandardMaterial({color:0xb8c4d1,metalness:.9,roughness:.2});
+const dark=new THREE.MeshStandardMaterial({color:0x07101c,metalness:.72,roughness:.22});
+const graphite=new THREE.MeshStandardMaterial({color:0x1c2939,metalness:.82,roughness:.25});
+const glow=new THREE.MeshStandardMaterial({color:0x9fc4ff,emissive:0x2e78ff,emissiveIntensity:4.2,metalness:.35,roughness:.12});
+const redGlow=new THREE.MeshStandardMaterial({color:0xffb6c8,emissive:0xff2458,emissiveIntensity:3.4});
+function part(g,m,p){const o=new THREE.Mesh(g,m);o.position.set(...p);o.castShadow=false;o.receiveShadow=false;return o}
+function add(o,p){o.position.set(...p);robot.add(o);return o}
+function cyl(rt,rb,h,m,seg=16){return new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),m)}
+function joint(name,y){const g=new THREE.Group();g.name=name;g.position.y=y;robot.add(g);return g}
+function limb(parent,geo,m,p){const o=new THREE.Mesh(geo,m);o.position.set(...p);parent.add(o);return o}
+
+// Pelvis, abdomen and heroic chest silhouette
+const pelvis=add(part(new THREE.CylinderGeometry(.42,.5,.34,8),graphite),[0,-.62,0]);
+const abdomen=add(part(new THREE.CylinderGeometry(.43,.54,.55,8),metal),[0,-.12,0]);
+const chest=add(part(new THREE.CylinderGeometry(.60,.48,.78,8),metal),[0,.48,0]);
+const chestPlate=add(part(new THREE.BoxGeometry(.78,.46,.10),dark),[0,.55,.48]);
+const chestCore=add(part(new THREE.CylinderGeometry(.115,.115,.045,32),glow),[0,.55,.55]);
+
+// Neck and human-proportioned head
+const neck=add(part(new THREE.CylinderGeometry(.18,.22,.24,16),dark),[0,1.01,0]);
+const head=add(part(new THREE.SphereGeometry(.46,28,20),metal),[0,1.43,0]);head.scale.set(1,.98,.86);
+const face=add(part(new THREE.SphereGeometry(.34,24,16),dark),[0,1.44,.32]);face.scale.set(1,.78,.25);
+const brow=add(part(new THREE.BoxGeometry(.48,.08,.05),graphite),[0,1.61,.54]);
+const eyeL=add(part(new THREE.SphereGeometry(.055,12,8),glow),[-.13,1.49,.57]);eyeL.scale.y=.6;
+const eyeR=add(part(new THREE.SphereGeometry(.055,12,8),glow),[.13,1.49,.57]);eyeR.scale.y=.6;
+const mouth=add(part(new THREE.TorusGeometry(.105,.014,8,24),redGlow),[0,1.31,.56]);mouth.scale.y=.42;
+const jaw=add(part(new THREE.BoxGeometry(.38,.10,.10),graphite),[0,1.25,.46]);
+
+// Shoulder assemblies and arms with articulated human-like joints
+const shL=joint('shoulderL',.77),shR=joint('shoulderR',.77);shL.position.x=-.65;shR.position.x=.65;
+limb(shL,new THREE.SphereGeometry(.22,16,12),graphite,[0,0,0]);limb(shR,new THREE.SphereGeometry(.22,16,12),graphite,[0,0,0]);
+const upperL=joint('upperL',.48),upperR=joint('upperR',.48);upperL.position.x=-.75;upperR.position.x=.75;upperL.rotation.z=-.07;upperR.rotation.z=.07;
+limb(upperL,new THREE.CapsuleGeometry(.14,.42,6,12),metal,[0,-.25,0]);limb(upperR,new THREE.CapsuleGeometry(.14,.42,6,12),metal,[0,-.25,0]);
+const elbowL=joint('elbowL',-.03),elbowR=joint('elbowR',-.03);elbowL.position.x=-.75;elbowR.position.x=.75;
+limb(elbowL,new THREE.SphereGeometry(.16,14,10),graphite,[0,0,0]);limb(elbowR,new THREE.SphereGeometry(.16,14,10),graphite,[0,0,0]);
+const foreL=joint('foreL',-.31),foreR=joint('foreR',-.31);foreL.position.x=-.75;foreR.position.x=.75;
+limb(foreL,new THREE.CapsuleGeometry(.115,.43,6,12),metal,[0,-.25,0]);limb(foreR,new THREE.CapsuleGeometry(.115,.43,6,12),metal,[0,-.25,0]);
+const handL=joint('handL',-.61),handR=joint('handR',-.61);handL.position.x=-.75;handR.position.x=.75;
+limb(handL,new THREE.SphereGeometry(.13,14,10),dark,[0,-.07,0]);limb(handR,new THREE.SphereGeometry(.13,14,10),dark,[0,-.07,0]);
+
+// Legs: thigh, knee, shin and feet
+const thighL=joint('thighL',-.82),thighR=joint('thighR',-.82);thighL.position.x=-.27;thighR.position.x=.27;
+limb(thighL,new THREE.CapsuleGeometry(.18,.48,6,12),metal,[0,-.27,0]);limb(thighR,new THREE.CapsuleGeometry(.18,.48,6,12),metal,[0,-.27,0]);
+const kneeL=joint('kneeL',-1.25),kneeR=joint('kneeR',-1.25);kneeL.position.x=-.27;kneeR.position.x=.27;
+limb(kneeL,new THREE.SphereGeometry(.17,14,10),graphite,[0,0,0]);limb(kneeR,new THREE.SphereGeometry(.17,14,10),graphite,[0,0,0]);
+const shinL=joint('shinL',-1.52),shinR=joint('shinR',-1.52);shinL.position.x=-.27;shinR.position.x=.27;
+limb(shinL,new THREE.CapsuleGeometry(.145,.50,6,12),metal,[0,-.27,0]);limb(shinR,new THREE.CapsuleGeometry(.145,.50,6,12),metal,[0,-.27,0]);
+const footL=add(part(new THREE.BoxGeometry(.30,.16,.52),dark),[-.27,-2.02,.12]);footL.rotation.x=-.06;
+const footR=add(part(new THREE.BoxGeometry(.30,.16,.52),dark),[.27,-2.02,.12]);footR.rotation.x=-.06;
+
+// Decorative spine and energy details
+const spine=add(part(new THREE.CylinderGeometry(.035,.035,1.65,10),glow),[0,.05,-.34]);
+const ring=new THREE.Mesh(new THREE.TorusGeometry(1.28,.014,8,96),glow);ring.rotation.x=Math.PI/2;ring.position.y=-2.08;scene.add(ring);
+const ring2=new THREE.Mesh(new THREE.TorusGeometry(1.62,.006,8,96),new THREE.MeshBasicMaterial({color:0x6e9cff,transparent:true,opacity:.28}));ring2.rotation.x=Math.PI/2;ring2.position.y=-2.08;scene.add(ring2);
+const floor=new THREE.Mesh(new THREE.CircleGeometry(2.25,48),new THREE.MeshBasicMaterial({color:0x0a1830,transparent:true,opacity:.32}));floor.rotation.x=-Math.PI/2;floor.position.y=-2.08;scene.add(floor);
+
+// Lightweight particle field for atmosphere
+const particles=new THREE.Points(new THREE.BufferGeometry(),new THREE.PointsMaterial({color:0x8eb8ff,size:.012,transparent:true,opacity:.58}));const pv=[];for(let i=0;i<180;i++){const a=Math.random()*Math.PI*2,r=1.1+Math.random()*2.2;pv.push(Math.cos(a)*r,-1.8+Math.random()*3.7,Math.sin(a)*r)}particles.geometry.setAttribute('position',new THREE.Float32BufferAttribute(pv,3));scene.add(particles);
+
+const J={shL,shR,upperL,upperR,elbowL,elbowR,foreL,foreR,handL,handR,thighL,thighR,kneeL,kneeR,shinL,shinR,head,neck,torso:chest,core:chestCore};
+let last=performance.now(),frames=0,fpsSmooth=60;
+function resize(){const w=Math.max(1,stage.clientWidth),h=Math.max(1,stage.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();
+function animate(t){requestAnimationFrame(animate);const dt=Math.min(.05,(t-last)/1000);last=t;frames++;if(frames%15===0){fpsSmooth=fpsSmooth*.8+(1/Math.max(dt,.001))*.2;fpsEl.textContent=Math.round(Math.min(120,fpsSmooth))}
+ const breathe=Math.sin(t*.00145),sway=Math.sin(t*.00062),talk=speaking?Math.abs(Math.sin(t*.020)):0;
+ robot.position.y=-1.72+breathe*.025;robot.rotation.y=sway*.055;
+ J.head.rotation.y=Math.sin(t*.00075)*.055;J.head.rotation.z=Math.sin(t*.00053)*.014;
+ J.neck.rotation.z=-J.head.rotation.z*.35;
+ J.shL.rotation.z=-.03+Math.sin(t*.0011)*.025;J.shR.rotation.z=.03-Math.sin(t*.0011)*.025;
+ J.upperL.rotation.z=-.08+Math.sin(t*.00105)*.035;J.upperR.rotation.z=.08-Math.sin(t*.00105)*.035;
+ J.elbowL.rotation.z=Math.sin(t*.0012)*.025;J.elbowR.rotation.z=-Math.sin(t*.0012)*.025;
+ J.foreL.rotation.z=.02+Math.sin(t*.0013)*.03;J.foreR.rotation.z=-.02-Math.sin(t*.0013)*.03;
+ J.thighL.rotation.z=-Math.sin(t*.0009)*.012;J.thighR.rotation.z=Math.sin(t*.0009)*.012;
+ J.shinL.rotation.z=Math.sin(t*.0009)*.01;J.shinR.rotation.z=-Math.sin(t*.0009)*.01;
+ const blink=(Math.sin(t*.00031)>0.998)?.08:1;eyeL.scale.y=.6*blink;eyeR.scale.y=.6*blink;
+ eyeL.material.emissiveIntensity=4+Math.sin(t*.004)*.9;eyeR.material.emissiveIntensity=eyeL.material.emissiveIntensity;
+ chestCore.material.emissiveIntensity=4+Math.sin(t*.003)*1.5+(robotMode==='think'?3:0);mouth.scale.y=.42+.30*talk;
+ ring.rotation.z=t*.00045;ring2.rotation.z=-t*.00025;particles.rotation.y=t*.00002;
+ renderer.render(scene,camera)}animate(performance.now());
+if('speechSynthesis'in window)speechSynthesis.addEventListener('voiceschanged',()=>speechSynthesis.getVoices());
