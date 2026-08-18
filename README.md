@@ -1,17 +1,31 @@
 # UZB ROLE
 
-Mobile-first 3D open-world RP prototype for the Android browser.
+Mobile-first 3D open-world RP game foundation for Android browsers.
 
 ## Current build
-- Custom WebGL renderer; no external CDN dependency.
-- Mobile joystick + action controls.
-- Procedural city blocks, roads and central boulevard.
-- Player movement, sprint and vehicle enter/exit state.
+- Custom WebGL renderer with no CDN dependency.
+- Procedural 3D city with roads, buildings, roofs, windows, plaza and fountain.
+- 3D player character made from low-poly body parts.
+- Multiple low-poly NPC characters.
+- Multiple modeled cars with bodies, cabins, wheels and lights.
+- Trees and street lamps throughout the city.
+- Third-person camera and mobile joystick.
+- Sprint, vehicle enter/exit and mission interaction.
 - Money, health, wanted level and in-game clock HUD.
-- Mission progression and local NPC-style AI dialogue.
-- PWA manifest and fullscreen mobile presentation.
+- Day/night lighting cycle.
+- Web Audio effects for UI, footsteps, vehicle, horn-style and money interactions.
+- PWA/fullscreen mobile presentation.
+- No external asset CDN required, so the game can run from the local Node server.
 
-## Direction
-The project is intentionally built in layers: renderer -> world -> player/vehicle -> RP systems -> multiplayer/backend -> assets/audio -> Android packaging.
+## Important
+The current 3D assets are generated directly by the WebGL renderer so the repository stays lightweight and works offline. Production-quality scanned/artist-made GLB assets, textures, animations and recorded sound packs can be added later without changing the server architecture.
 
-The next production layers should add authoritative multiplayer, persistent accounts, inventory, jobs, police/EMS, vehicle ownership, buildings/interiors, NPC schedules, quests, voice/chat, anti-cheat and optimized 3D assets.
+## Roadmap
+1. Character animation and camera polish.
+2. More detailed vehicles and vehicle physics.
+3. Shops, houses, interiors and interactive businesses.
+4. NPC schedules, jobs, police/EMS and quests.
+5. Inventory, persistent accounts and economy.
+6. Authoritative multiplayer backend, chat and anti-cheat.
+7. Optimized GLB assets, textures, music and voice lines.
+8. Android APK packaging and device performance profiles.
