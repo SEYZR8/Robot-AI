@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#08111f">
+<title>UZB ROLE</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<canvas id="game" aria-label="UZB ROLE 3D game"></canvas>
+<div id="hud">
+  <div class="topbar"><div><b>UZB ROLE</b><span id="status"> • TOSHKENT</span></div><div id="clock">08:00</div></div>
+  <div class="stats"><span>💵 <b id="money">250 000</b> so'm</span><span>❤️ <b id="hp">100</b></span><span>⭐ <b id="wanted">0</b></span></div>
+  <div id="mission"><b>Vazifa</b><br><span id="missionText">Shahar markaziga boring.</span></div>
+</div>
+<div id="dialog" class="hidden"><div id="dialogText"></div><button id="dialogBtn">Davom etish</button></div>
+<div id="controls">
+  <div id="stick"><div id="knob"></div></div>
+  <div class="actions"><button id="run">🏃</button><button id="enter">🚗</button><button id="action">E</button></div>
+</div>
+<div id="start"><div class="logo">UZB<br><span>ROLE</span></div><p>Real hayotga yaqin mobil RP dunyosi</p><button id="play">O'YINNI BOSHLASH</button><small>WebGL • Mobile optimized</small></div>
+<script src="game.js"></script>
+</body>
+</html>

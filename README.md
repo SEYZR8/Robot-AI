@@ -1,53 +1,17 @@
-# Robot AI — H-01
+# UZB ROLE
 
-Futuristic 3D humanoid AI assistant for mobile and desktop browsers.
+Mobile-first 3D open-world RP prototype for the Android browser.
 
-## What is included
+## Current build
+- Custom WebGL renderer; no external CDN dependency.
+- Mobile joystick + action controls.
+- Procedural city blocks, roads and central boulevard.
+- Player movement, sprint and vehicle enter/exit state.
+- Money, health, wanted level and in-game clock HUD.
+- Mission progression and local NPC-style AI dialogue.
+- PWA manifest and fullscreen mobile presentation.
 
-- High-performance procedural humanoid 3D avatar with human-like proportions
-- Head, eyes, blink, mouth/lip movement, shoulders, articulated arms, hands, legs and feet
-- Idle, listening, thinking and speaking avatar states
-- Drag-to-rotate and wheel/pinch-friendly camera controls
-- High-FPS renderer with capped device pixel ratio
-- Premium responsive HUD and chat interface
-- Uzbek voice input where supported by the browser
-- Female/male voice profiles using available system speech voices
-- Local conversation memory in browser storage
-- Server-side AI bridge using the OpenAI Responses API
-- Local fallback mode when no API key is configured
-- Health endpoint for deployment checks
-- No API secret is stored in frontend code
+## Direction
+The project is intentionally built in layers: renderer -> world -> player/vehicle -> RP systems -> multiplayer/backend -> assets/audio -> Android packaging.
 
-## Run locally
-
-Requirements: Node.js 18+.
-
-```bash
-npm start
-```
-
-Open `http://127.0.0.1:3000`.
-
-## Enable the AI brain
-
-Set the API key only in the server environment:
-
-```bash
-export OPENAI_API_KEY="your-key"
-export OPENAI_MODEL="gpt-5.6"
-npm start
-```
-
-Never put the real key into GitHub or browser JavaScript. `.env.example` documents the configuration shape.
-
-## Architecture
-
-- `app/index.html` — product shell and controls
-- `app/styles.css` — responsive visual system
-- `app/app.js` — 3D engine, avatar animation, voice, memory and chat client
-- `server.js` — static server, `/api/chat` and `/api/health`
-- `docs/` — architecture and product notes
-
-## Next production layers
-
-The project is structured so provider adapters, durable memory, authenticated users, vision input, realtime audio, tool execution, observability and a production-grade facial rig can be added without exposing secrets to the browser.
+The next production layers should add authoritative multiplayer, persistent accounts, inventory, jobs, police/EMS, vehicle ownership, buildings/interiors, NPC schedules, quests, voice/chat, anti-cheat and optimized 3D assets.
